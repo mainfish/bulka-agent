@@ -1,6 +1,6 @@
 use agent_core::domain::command::AgentCommand;
-use agent_core::domain::message::{Message, MessageRole};
 use agent_core::domain::session::Session;
+use agent_core::usecases::run_turn::run_turn;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("agent-cli");
@@ -16,19 +16,14 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 println!("Bye ✋🏼");
                 break;
             }
-            AgentCommand::ClearSession => {
-                session = Session::new();
-                println!("session cleared");
-                println!("messages: {}", session.messages.len());
-            }
-            AgentCommand::UserPrompt(prompt) => {
-                session.messages.push(Message {
-                    role: MessageRole::User,
-                    content: prompt.clone(),
-                });
+            other => {
+                run_turn(&mut session, other)?;
 
-                println!("user: {prompt}");
                 println!("messages: {}", session.messages.len());
+
+                if let Some(last) = session.messages.last() {
+                    println!("last: {}", last.content);
+                }
             }
         }
     }

@@ -1,16 +1,16 @@
 use agent_core::domain::command::AgentCommand;
-use agent_core::domain::session::Session;
+use agent_core::domain::state::AppState;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("agent-cli");
     println!("type /exit to quit");
 
-    let mut session = Session::new();
+    let mut state = AppState::new();
 
     loop {
         let command = read_command()?;
-        let outcome = run_turn(&mut session, command)?;
+        let outcome = run_turn(&mut state.session, command)?;
 
         match outcome {
             TurnOutcome::Exiting => {
@@ -19,7 +19,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
             TurnOutcome::SessionCleared => {
                 println!("session cleared");
-                println!("messages: {}", session.messages.len());
+                println!("messages: {}", state.session.messages.len());
             }
             TurnOutcome::UserMessageAdded {
                 content,

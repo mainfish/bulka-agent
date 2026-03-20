@@ -1,9 +1,9 @@
-use agent_core::domain::session::Session;
+use agent_core::domain::state::AppState;
 
 pub fn run() {
-    let session = Session::new();
+    let state = AppState::new();
 
     println!("agent-server");
     println!("server shell initialized");
-    println!("messages: {}", session.messages.len());
+    println!("messages: {}", state.session.messages.len());
 }

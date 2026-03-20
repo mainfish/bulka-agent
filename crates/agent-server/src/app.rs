@@ -1,9 +1,9 @@
 use agent_core::domain::command::AgentCommand;
-use agent_core::domain::state::AppState;
+use agent_core::usecases::init_state::init_state;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
 
 pub fn run() {
-    let mut state = AppState::new();
+    let mut state = init_state();
 
     println!("agent-server");
     println!("server shell initialized");

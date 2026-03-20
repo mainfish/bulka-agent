@@ -1,6 +1,6 @@
 use agent_core::domain::command::AgentCommand;
 use agent_core::domain::session::Session;
-use agent_core::usecases::run_turn::run_turn;
+use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("agent-cli");
@@ -10,20 +10,23 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
         let command = read_command()?;
+        let outcome = run_turn(&mut session, command)?;
 
-        match command {
-            AgentCommand::Exit => {
+        match outcome {
+            TurnOutcome::Exiting => {
                 println!("Bye ✋🏼");
                 break;
             }
-            other => {
-                run_turn(&mut session, other)?;
-
+            TurnOutcome::SessionCleared => {
+                println!("session cleared");
                 println!("messages: {}", session.messages.len());
-
-                if let Some(last) = session.messages.last() {
-                    println!("last: {}", last.content);
-                }
+            }
+            TurnOutcome::UserMessageAdded {
+                content,
+                total_messages,
+            } => {
+                println!("user: {content}");
+                println!("messages: {total_messages}");
             }
         }
     }
@@ -36,6 +39,7 @@ fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
     std::io::stdin().read_line(&mut input)?;
 
     let trimmed = input.trim();
+
     let command = match trimmed {
         "/exit" | ":q" => AgentCommand::Exit,
         "/clear" => AgentCommand::ClearSession,

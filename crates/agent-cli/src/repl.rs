@@ -10,7 +10,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
         let command = read_command()?;
-        let outcome = run_turn(&mut state.session, command)?;
+        let outcome = run_turn(&mut state, command)?;
 
         match outcome {
             TurnOutcome::Exiting => {

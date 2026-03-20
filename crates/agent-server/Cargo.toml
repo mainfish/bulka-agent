@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 agent-core = { path = "../agent-core" }
+agent-infra = { path = "../agent-infra" }

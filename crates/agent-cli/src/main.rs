@@ -1,9 +1,5 @@
-use agent_core::domain::session::Session;
+mod repl;
 
-fn main() {
-    let session = Session::new();
-
-    println!("agent-cli");
-    println!("session initialized");
-    println!("messages: {}", session.messages.len());
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    repl::run()
 }

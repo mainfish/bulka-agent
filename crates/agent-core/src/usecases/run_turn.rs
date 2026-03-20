@@ -11,6 +11,7 @@ pub enum TurnOutcome {
         content: String,
         total_messages: usize,
     },
+    UnknownCommand(String),
 }
 
 pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<TurnOutcome> {
@@ -31,6 +32,7 @@ pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<TurnO
                 total_messages: state.session.messages.len(),
             }
         }
+        AgentCommand::Unknown(command) => TurnOutcome::UnknownCommand(command),
     };
 
     Ok(outcome)

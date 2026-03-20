@@ -1,9 +1,5 @@
-use agent_core::domain::session::Session;
+mod app;
 
 fn main() {
-    let session = Session::new();
-
-    println!("agent-server");
-    println!("session initialized");
-    println!("messages: {}", session.messages.len());
+    app::run();
 }

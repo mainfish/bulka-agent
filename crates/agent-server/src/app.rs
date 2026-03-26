@@ -1,6 +1,7 @@
 use agent_core::ports::llm::LlmPort;
 use agent_core::ports::storage::SessionStore;
 use agent_core::ports::tools::ToolPort;
+use agent_core::usecases::list_tools::list_tools;
 use agent_core::usecases::load_state::load_state_from_store;
 use agent_infra::llama::NullLlmAdapter;
 use agent_infra::storage::NullSessionStore;
@@ -12,7 +13,7 @@ pub fn run() {
     let store = NullSessionStore::new();
 
     let _llm_port: &dyn LlmPort = &llm;
-    let _tool_port: &dyn ToolPort = &tools;
+    let tool_port: &dyn ToolPort = &tools;
     let _session_store: &dyn SessionStore = &store;
 
     let state = match load_state_from_store(&store) {
@@ -23,10 +24,19 @@ pub fn run() {
         }
     };
 
+    let tool_specs = match list_tools(tool_port) {
+        Ok(specs) => specs,
+        Err(err) => {
+            eprintln!("failed to list tools: {err}");
+            return;
+        }
+    };
+
     println!("agent-server");
     println!("server shell initialized");
     println!("llm adapter wired");
     println!("tool adapter wired");
     println!("session store wired");
     println!("messages: {}", state.session.messages.len());
+    println!("available tools: {}", tool_specs.len());
 }

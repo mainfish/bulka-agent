@@ -4,7 +4,7 @@ pub fn parse_command(input: &str) -> AgentCommand {
     let trimmed = input.trim();
 
     match trimmed {
-        "/exit" | ":q" => AgentCommand::Exit,
+        "/exit" => AgentCommand::Exit,
         "/clear" => AgentCommand::ClearSession,
         "/commands" => AgentCommand::ComandsList,
         "" => AgentCommand::Unknown(String::new()),

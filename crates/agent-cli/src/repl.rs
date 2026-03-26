@@ -8,13 +8,11 @@ use agent_infra::tools::NullToolAdapter;
 use crate::commands::parse_command;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
-    println!("agent-cli");
-    println!("type /exit to quit");
-    println!("type /tools to list available tools");
-
     let store = NullSessionStore::new();
     let tools = NullToolAdapter::new();
     let mut state = load_state_from_store(&store)?;
+
+    print_description();
 
     loop {
         let command = read_command()?;
@@ -64,4 +62,10 @@ fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
     std::io::stdin().read_line(&mut input)?;
 
     Ok(parse_command(&input))
+}
+
+fn print_description() {
+    println!("Hello ✋🏼 This is 🤖 the agent-cli");
+    println!("type /exit to quit");
+    println!("type /tools to list available tools");
 }

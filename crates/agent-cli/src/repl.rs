@@ -31,7 +31,15 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
             TurnOutcome::ToolsRequested => {
                 let specs = list_tools(&tools)?;
-                println!("tools: {}", specs.len());
+
+                if specs.is_empty() {
+                    println!("tools: no tools available");
+                } else {
+                    println!("tools:");
+                    for spec in specs {
+                        println!("- {}: {}", spec.name, spec.description);
+                    }
+                }
             }
             TurnOutcome::UserMessageAdded {
                 content,

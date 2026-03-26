@@ -27,7 +27,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 println!("session cleared");
                 println!("messages: {}", state.session.messages.len());
             }
-            TurnOutcome::ToolsRequested => {
+            TurnOutcome::ComandsList => {
                 let specs = list_tools(&tools)?;
 
                 if specs.is_empty() {
@@ -67,5 +67,5 @@ fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
 fn print_description() {
     println!("Hello ✋🏼 This is 🤖 the agent-cli");
     println!("type /exit to quit");
-    println!("type /tools to list available tools");
+    println!("type /commands to see list available commands");
 }

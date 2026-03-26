@@ -9,7 +9,7 @@ use super::clear_session::clear_session;
 pub enum TurnOutcome {
     Exiting,
     SessionCleared,
-    ToolsRequested,
+    ComandsList,
     UserMessageAdded {
         content: String,
         total_messages: usize,
@@ -25,7 +25,7 @@ pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<TurnO
 
             TurnOutcome::SessionCleared
         }
-        AgentCommand::ListTools => TurnOutcome::ToolsRequested,
+        AgentCommand::ComandsList => TurnOutcome::ComandsList,
         AgentCommand::UserPrompt(prompt) => {
             let total_messages = append_user_message(state, prompt.clone())?;
 

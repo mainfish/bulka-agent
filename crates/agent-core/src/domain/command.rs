@@ -1,8 +1,8 @@
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AgentCommand {
-    UserPrompt(String),
     ClearSession,
-    ListTools,
+    ComandsList,
     Exit,
+    UserPrompt(String),
     Unknown(String),
 }

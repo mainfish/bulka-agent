@@ -1,8 +1,8 @@
 use crate::domain::command::AgentCommand;
-use crate::domain::message::{Message, MessageRole};
 use crate::domain::state::AppState;
 use crate::errors::CoreResult;
 
+use super::append_user_message::append_user_message;
 use super::clear_session::clear_session;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,14 +24,11 @@ pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<TurnO
             TurnOutcome::SessionCleared
         }
         AgentCommand::UserPrompt(prompt) => {
-            state.session.messages.push(Message {
-                role: MessageRole::User,
-                content: prompt.clone(),
-            });
+            let total_messages = append_user_message(state, prompt.clone())?;
 
             TurnOutcome::UserMessageAdded {
                 content: prompt,
-                total_messages: state.session.messages.len(),
+                total_messages,
             }
         }
         AgentCommand::Unknown(command) => TurnOutcome::UnknownCommand(command),

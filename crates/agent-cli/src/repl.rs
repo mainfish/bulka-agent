@@ -1,6 +1,8 @@
 use agent_core::domain::command::AgentCommand;
 use agent_core::usecases::load_state::load_state_from_store;
-use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
+use agent_core::usecases::process_command::{
+    CommandOutcome, ControlOutcome, PromptOutcome, ToolOutcome, run_turn,
+};
 use agent_infra::storage::NullSessionStore;
 
 use crate::commands::parse_command;
@@ -15,28 +17,20 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         let command = read_command()?;
         let outcome = run_turn(&mut state, command)?;
 
-        match outcome {
-            TurnOutcome::Exiting => {
-                println!("Bye ✋🏼");
+        match &outcome {
+            CommandOutcome::Empty => {}
+            CommandOutcome::Control(ControlOutcome::Exiting) => {
+                println!("{}", outcome_text(&outcome));
                 break;
             }
-            TurnOutcome::SessionCleared => {
-                println!("session cleared");
-                println!("messages: {}", state.session.messages.len());
-            }
-            TurnOutcome::ComandsList => {
-                println!("not implemented");
-            }
-            TurnOutcome::UserMessageAdded {
-                content,
-                total_messages,
-            } => {
-                println!("user: {content}");
-                println!("messages: {total_messages}");
-            }
-            TurnOutcome::UnknownCommand(command) => {
-                if !command.is_empty() {
-                    println!("unknown command: {command}");
+            CommandOutcome::Unknown(_)
+            | CommandOutcome::Prompt(_)
+            | CommandOutcome::Control(ControlOutcome::SessionCleared)
+            | CommandOutcome::Control(ControlOutcome::CommandsList)
+            | CommandOutcome::Tool(ToolOutcome::NotImplemented) => {
+                let text = outcome_text(&outcome);
+                if !text.is_empty() {
+                    println!("{}", text);
                 }
             }
         }
@@ -53,7 +47,34 @@ fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
 }
 
 fn print_start_description() {
-    println!("Hello ✋🏼 This is 🤖 the agent-cli");
-    println!("type /exit to quit");
+    println!("Hello ✋🏼 This is the agent-cli 🤖");
+    println!("type /quit to quit");
     println!("type /commands to see list available commands");
+}
+
+fn outcome_text(outcome: &CommandOutcome) -> String {
+    match outcome {
+        CommandOutcome::Empty => String::new(),
+        CommandOutcome::Unknown(command) => {
+            if command.is_empty() {
+                String::new()
+            } else {
+                format!("unknown command: {command}")
+            }
+        }
+        CommandOutcome::Prompt(prompt_outcome) => match prompt_outcome {
+            PromptOutcome::UserMessageAdded {
+                content,
+                total_messages,
+            } => format!("user: {content}\nmessages: {total_messages}"),
+        },
+        CommandOutcome::Control(control_outcome) => match control_outcome {
+            ControlOutcome::SessionCleared => "session cleared".to_string(),
+            ControlOutcome::CommandsList => "commands:\n- /clear\n- /commands\n- /quit".to_string(),
+            ControlOutcome::Exiting => "Bye ✋🏼".to_string(),
+        },
+        CommandOutcome::Tool(tool_outcome) => match tool_outcome {
+            ToolOutcome::NotImplemented => "tools are not implemented yet".to_string(),
+        },
+    }
 }

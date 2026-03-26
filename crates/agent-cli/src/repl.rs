@@ -1,6 +1,7 @@
 use agent_core::domain::command::AgentCommand;
-use agent_core::usecases::init_state::init_state;
+use agent_core::usecases::load_state::load_state_from_store;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
+use agent_infra::storage::NullSessionStore;
 
 use crate::commands::parse_command;
 
@@ -8,7 +9,8 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("agent-cli");
     println!("type /exit to quit");
 
-    let mut state = init_state();
+    let store = NullSessionStore::new();
+    let mut state = load_state_from_store(&store)?;
 
     loop {
         let command = read_command()?;

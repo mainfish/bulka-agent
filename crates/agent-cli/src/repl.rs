@@ -2,14 +2,14 @@ use agent_core::domain::command::AgentCommand;
 use agent_core::usecases::list_tools::list_tools;
 use agent_core::usecases::load_state::load_state_from_store;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
+use agent_infra::fs_tool_adapter::FsToolAdapter;
 use agent_infra::storage::NullSessionStore;
-use agent_infra::tools::NullToolAdapter;
 
 use crate::commands::parse_command;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     let store = NullSessionStore::new();
-    let tools = NullToolAdapter::new();
+    let tools = FsToolAdapter::new();
     let mut state = load_state_from_store(&store)?;
 
     print_description();

@@ -1,18 +1,15 @@
 use agent_core::domain::command::AgentCommand;
-use agent_core::usecases::list_tools::list_tools;
 use agent_core::usecases::load_state::load_state_from_store;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
-use agent_infra::fs_tool_adapter::FsToolAdapter;
 use agent_infra::storage::NullSessionStore;
 
 use crate::commands::parse_command;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     let store = NullSessionStore::new();
-    let tools = FsToolAdapter::new();
     let mut state = load_state_from_store(&store)?;
 
-    print_description();
+    print_start_description();
 
     loop {
         let command = read_command()?;
@@ -28,16 +25,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 println!("messages: {}", state.session.messages.len());
             }
             TurnOutcome::ComandsList => {
-                let specs = list_tools(&tools)?;
-
-                if specs.is_empty() {
-                    println!("tools: no tools available");
-                } else {
-                    println!("tools:");
-                    for spec in specs {
-                        println!("- {}: {}", spec.name, spec.description);
-                    }
-                }
+                println!("not implemented");
             }
             TurnOutcome::UserMessageAdded {
                 content,
@@ -64,7 +52,7 @@ fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
     Ok(parse_command(&input))
 }
 
-fn print_description() {
+fn print_start_description() {
     println!("Hello ✋🏼 This is 🤖 the agent-cli");
     println!("type /exit to quit");
     println!("type /commands to see list available commands");

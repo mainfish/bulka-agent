@@ -3,6 +3,8 @@ use crate::domain::message::{Message, MessageRole};
 use crate::domain::state::AppState;
 use crate::errors::CoreResult;
 
+use super::clear_session::clear_session;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TurnOutcome {
     Exiting,
@@ -18,7 +20,7 @@ pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<TurnO
     let outcome = match command {
         AgentCommand::Exit => TurnOutcome::Exiting,
         AgentCommand::ClearSession => {
-            state.session.messages.clear();
+            clear_session(state)?;
             TurnOutcome::SessionCleared
         }
         AgentCommand::UserPrompt(prompt) => {

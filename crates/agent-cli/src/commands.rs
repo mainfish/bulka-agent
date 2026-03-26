@@ -6,6 +6,7 @@ pub fn parse_command(input: &str) -> AgentCommand {
     match trimmed {
         "/exit" | ":q" => AgentCommand::Exit,
         "/clear" => AgentCommand::ClearSession,
+        "/tools" => AgentCommand::ListTools,
         "" => AgentCommand::Unknown(String::new()),
         _ if trimmed.starts_with('/') => AgentCommand::Unknown(trimmed.to_string()),
         _ => AgentCommand::UserPrompt(trimmed.to_string()),

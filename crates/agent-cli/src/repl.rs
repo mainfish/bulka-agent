@@ -1,15 +1,19 @@
 use agent_core::domain::command::AgentCommand;
+use agent_core::usecases::list_tools::list_tools;
 use agent_core::usecases::load_state::load_state_from_store;
 use agent_core::usecases::run_turn::{TurnOutcome, run_turn};
 use agent_infra::storage::NullSessionStore;
+use agent_infra::tools::NullToolAdapter;
 
 use crate::commands::parse_command;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     println!("agent-cli");
     println!("type /exit to quit");
+    println!("type /tools to list available tools");
 
     let store = NullSessionStore::new();
+    let tools = NullToolAdapter::new();
     let mut state = load_state_from_store(&store)?;
 
     loop {
@@ -24,6 +28,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             TurnOutcome::SessionCleared => {
                 println!("session cleared");
                 println!("messages: {}", state.session.messages.len());
+            }
+            TurnOutcome::ToolsRequested => {
+                let specs = list_tools(&tools)?;
+                println!("tools: {}", specs.len());
             }
             TurnOutcome::UserMessageAdded {
                 content,

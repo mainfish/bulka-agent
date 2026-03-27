@@ -25,7 +25,7 @@ pub enum PromptOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ControlOutcome {
     SessionCleared,
-    CommandsList,
+    CommandsList(Vec<String>),
     Exiting,
 }
 
@@ -34,7 +34,7 @@ pub enum ToolOutcome {
     NotImplemented,
 }
 
-pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<CommandOutcome> {
+pub fn process_command(state: &mut AppState, command: AgentCommand) -> CoreResult<CommandOutcome> {
     let outcome = match command {
         AgentCommand::Empty => CommandOutcome::Empty,
         AgentCommand::Unknown(command) => CommandOutcome::Unknown(command),
@@ -51,7 +51,13 @@ pub fn run_turn(state: &mut AppState, command: AgentCommand) -> CoreResult<Comma
                 clear_session(state)?;
                 CommandOutcome::Control(ControlOutcome::SessionCleared)
             }
-            ControlCommand::CommandsList => CommandOutcome::Control(ControlOutcome::CommandsList),
+            ControlCommand::CommandsList => {
+                CommandOutcome::Control(ControlOutcome::CommandsList(vec![
+                    "/clear".to_string(),
+                    "/commands".to_string(),
+                    "/quit".to_string(),
+                ]))
+            }
             ControlCommand::Exit => CommandOutcome::Control(ControlOutcome::Exiting),
         },
         AgentCommand::Tool(tool) => match tool {

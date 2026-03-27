@@ -1,4 +1,4 @@
-use crate::domain::command::{AgentCommand, ControlCommand, ToolCommand};
+use crate::domain::command::{AgentCommand, CommandDescription, ControlCommand, ToolCommand};
 use crate::domain::state::AppState;
 use crate::errors::CoreResult;
 
@@ -30,31 +30,6 @@ pub enum ControlOutcome {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CommandDescription {
-    pub command: String,
-    pub description: String,
-}
-
-impl ControlCommand {
-    pub fn descriptions() -> Vec<CommandDescription> {
-        vec![
-            CommandDescription {
-                command: "/clear".to_string(),
-                description: "clear session".to_string(),
-            },
-            CommandDescription {
-                command: "/commands".to_string(),
-                description: "show available commands".to_string(),
-            },
-            CommandDescription {
-                command: "/quit".to_string(),
-                description: "quit agent-cli".to_string(),
-            },
-        ]
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ToolOutcome {
     NotImplemented,
 }
@@ -76,7 +51,7 @@ pub fn process_command(state: &mut AppState, command: AgentCommand) -> CoreResul
                 clear_session(state)?;
                 CommandOutcome::Control(ControlOutcome::SessionCleared)
             }
-            ControlCommand::ShowCommands => CommandOutcome::Control(ControlOutcome::CommandsList(
+            ControlCommand::CommandsList => CommandOutcome::Control(ControlOutcome::CommandsList(
                 ControlCommand::descriptions(),
             )),
             ControlCommand::Exit => CommandOutcome::Control(ControlOutcome::Exiting),

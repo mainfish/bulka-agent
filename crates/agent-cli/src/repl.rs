@@ -20,7 +20,9 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
         match &outcome {
             CommandOutcome::Empty => {}
             CommandOutcome::Unknown(command) => {
-                println!("unknown command: {command}");
+                if !command.is_empty() {
+                    println!("unknown command: {command}");
+                }
             }
             CommandOutcome::Prompt(PromptOutcome::UserMessageAdded {
                 content,

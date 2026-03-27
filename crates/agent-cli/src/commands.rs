@@ -15,7 +15,7 @@ fn parse_slash_command(trimmed: &str) -> AgentCommand {
         Some(command) => match command {
             "quit" => AgentCommand::Control(ControlCommand::Exit),
             "clear" => AgentCommand::Control(ControlCommand::ClearSession),
-            "commands" => AgentCommand::Control(ControlCommand::ShowCommands),
+            "commands" => AgentCommand::Control(ControlCommand::CommandsList),
             _ => AgentCommand::Unknown(trimmed.to_string()),
         },
         None => AgentCommand::Empty,

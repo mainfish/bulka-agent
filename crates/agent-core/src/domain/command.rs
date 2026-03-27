@@ -10,7 +10,7 @@ pub enum AgentCommand {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ControlCommand {
     ClearSession,
-    CommandsList,
+    ShowCommands,
     Exit,
 }
 

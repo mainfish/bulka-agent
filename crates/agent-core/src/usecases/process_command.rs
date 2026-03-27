@@ -25,8 +25,33 @@ pub enum PromptOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ControlOutcome {
     SessionCleared,
-    CommandsList(Vec<String>),
+    CommandsList(Vec<CommandDescription>),
     Exiting,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CommandDescription {
+    pub command: String,
+    pub description: String,
+}
+
+impl ControlCommand {
+    pub fn descriptions() -> Vec<CommandDescription> {
+        vec![
+            CommandDescription {
+                command: "/clear".to_string(),
+                description: "clear session".to_string(),
+            },
+            CommandDescription {
+                command: "/commands".to_string(),
+                description: "show available commands".to_string(),
+            },
+            CommandDescription {
+                command: "/quit".to_string(),
+                description: "quit agent-cli".to_string(),
+            },
+        ]
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -51,13 +76,9 @@ pub fn process_command(state: &mut AppState, command: AgentCommand) -> CoreResul
                 clear_session(state)?;
                 CommandOutcome::Control(ControlOutcome::SessionCleared)
             }
-            ControlCommand::CommandsList => {
-                CommandOutcome::Control(ControlOutcome::CommandsList(vec![
-                    "/clear".to_string(),
-                    "/commands".to_string(),
-                    "/quit".to_string(),
-                ]))
-            }
+            ControlCommand::ShowCommands => CommandOutcome::Control(ControlOutcome::CommandsList(
+                ControlCommand::descriptions(),
+            )),
             ControlCommand::Exit => CommandOutcome::Control(ControlOutcome::Exiting),
         },
         AgentCommand::Tool(tool) => match tool {

@@ -39,8 +39,8 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 ControlOutcome::CommandsList(commands_list) => {
                     println!("commands:");
-                    for command in commands_list {
-                        println!("- {command}");
+                    for description in commands_list {
+                        println!("- {}: {}", description.command, description.description);
                     }
                 }
             },

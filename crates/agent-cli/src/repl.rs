@@ -3,13 +3,13 @@ use agent_core::usecases::load_state::load_state_from_store;
 use agent_core::usecases::process_command::{
     CommandOutcome, ControlOutcome, PromptOutcome, ToolOutcome, process_command,
 };
-use agent_infra::storage::NullSessionStore;
+use agent_infra::session_store_factory::SessionStoreFactory;
 
 use crate::commands::parse_command;
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let store = NullSessionStore::new();
-    let mut state = load_state_from_store(&store)?;
+    let store = SessionStoreFactory::from_env()?;
+    let mut state = load_state_from_store(store.as_ref())?;
 
     print_start_description();
 
@@ -60,7 +60,6 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 fn read_command() -> Result<AgentCommand, Box<dyn std::error::Error>> {
     let mut input = String::new();
     std::io::stdin().read_line(&mut input)?;
-
     Ok(parse_command(&input))
 }
 
